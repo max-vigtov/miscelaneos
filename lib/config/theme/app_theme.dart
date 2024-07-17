@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   ThemeData getTheme() => ThemeData(
+    brightness: Brightness.dark,
     useMaterial3: true,
     colorSchemeSeed: Colors.blue,
     textTheme: TextTheme(
