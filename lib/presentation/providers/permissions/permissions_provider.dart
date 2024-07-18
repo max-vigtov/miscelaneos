@@ -1,11 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class PermissionsNotifier extends StateNotifier<PermissionsState>{
-  PermissionsNotifier(): super(PermissionsState()){
-    checkPermissions();
-  }
+final permissionsProvider = StateNotifierProvider<PermissionsNotifier, PermissionsState>((ref) {
+  return PermissionsNotifier();
+});
 
+class PermissionsNotifier extends StateNotifier<PermissionsState>{
+  PermissionsNotifier(): super(PermissionsState());
+  
   Future<void> checkPermissions() async{
     final permissionsArray = await Future.wait([
       Permission.camera.status,
@@ -26,15 +28,43 @@ class PermissionsNotifier extends StateNotifier<PermissionsState>{
     );
   }
 
-  requestCameraAcces() async{
-    final status = await Permission.camera.request();
-    state = state.copyWith(camera: status);
-    
+  openSettingsScreen(){
+    openAppSettings();
+  }
+
+  void _checkPermissioState(PermissionStatus status){
     if(status == PermissionStatus.permanentlyDenied) {
-      openAppSettings();
+      openSettingsScreen();
     }
   }
 
+  requestCameraAccess() async{
+    final status = await Permission.camera.request();
+    state = state.copyWith(camera: status);
+    _checkPermissioState(status);
+    
+  }
+
+  requestPhotoLibraryAccess() async{
+    final status = await Permission.photos.request();
+    state = state.copyWith(photoLibrary: status);
+    
+    _checkPermissioState(status);
+  }
+
+  requestLocationAccess() async{
+    final status = await Permission.location.request();
+    state = state.copyWith(location: status);
+    
+    _checkPermissioState(status);
+  }
+
+  requestSensorsAccess() async{
+    final status = await Permission.sensors.request();
+    state = state.copyWith(sensors: status);
+    
+    _checkPermissioState(status);
+  }  
 }
 
 class PermissionsState{
@@ -79,21 +109,21 @@ class PermissionsState{
     return locationWhenInUse == PermissionStatus.granted;
   }
 
-PermissionsState copyWith({
-  PermissionStatus? camera,
-  PermissionStatus? photoLibrary,
-  PermissionStatus? sensors,
-  PermissionStatus? location,
-  PermissionStatus? locationAlways,
-  PermissionStatus? locationWhenInUse,
- 
- }) => PermissionsState(
-  camera: camera ?? this.camera,
-  photoLibrary: photoLibrary ?? this.photoLibrary,
-  sensors: sensors ?? this.sensors,
-  location: location ?? this.location,
-  locationAlways: locationAlways ?? this.locationAlways,
-  locationWhenInUse: locationWhenInUse ?? this.locationWhenInUse,
- );
+  PermissionsState copyWith({
+    PermissionStatus? camera,
+    PermissionStatus? photoLibrary,
+    PermissionStatus? sensors,
+    PermissionStatus? location,
+    PermissionStatus? locationAlways,
+    PermissionStatus? locationWhenInUse,
+  
+  }) => PermissionsState(
+    camera: camera ?? this.camera,
+    photoLibrary: photoLibrary ?? this.photoLibrary,
+    sensors: sensors ?? this.sensors,
+    location: location ?? this.location,
+    locationAlways: locationAlways ?? this.locationAlways,
+    locationWhenInUse: locationWhenInUse ?? this.locationWhenInUse,
+  );
 
 }

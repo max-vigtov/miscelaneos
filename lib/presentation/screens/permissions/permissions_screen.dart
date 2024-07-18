@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:miscelaneos/presentation/providers/permissions/permissions_provider.dart';
 
 class PermissionsScreen extends StatelessWidget {
   const PermissionsScreen({super.key});
@@ -20,16 +21,46 @@ class _PermissionsView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
+
+    final permissions = ref.watch(permissionsProvider);
+    
     return ListView(
       children: [
         CheckboxListTile(
-          value: true,
+          value: permissions.cameraGranted,
           title: const Text('Cámara'),
-          subtitle: const Text('Estado actual'),
-          onChanged: (value) {          
+          subtitle: Text('Estado actual: ${permissions.camera}'),
+          onChanged: ( _ ) {          
+            ref.read(permissionsProvider.notifier).requestCameraAccess();
           }
         ),
 
+        CheckboxListTile(
+          value: permissions.photoLibraryGranted,
+          title: const Text('Galería de fotos'),
+          subtitle: Text('Estado actual: ${permissions.photoLibrary}'),
+          onChanged: ( _ ) {          
+            ref.read(permissionsProvider.notifier).requestPhotoLibraryAccess();
+          }
+        ),
+
+        CheckboxListTile(
+          value: permissions.locationGranted,
+          title: const Text('Ubicación'),
+          subtitle: Text('Estado actual: ${permissions.location}'),
+          onChanged: ( _ ) {          
+            ref.read(permissionsProvider.notifier).requestLocationAccess();
+          }
+        ),
+
+        CheckboxListTile(
+          value: permissions.sensorsGranted,
+          title: const Text('Sensores'),
+          subtitle: Text('Estado actual: ${permissions.sensors}'),
+          onChanged: ( _ ) {          
+            ref.read(permissionsProvider.notifier).requestSensorsAccess();
+          }
+        ),
       ],
     );
   }
